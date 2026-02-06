@@ -24,6 +24,16 @@ This will set up a virtual machine with the Katello codebase checked out.
 Please use the forklift documentation found in the repository for how
 to get started with forklift.
 
+While not required [solargraph](https://solargraph.org/) can be used to get intellisense working. To set this up you will need to run a few commands first. 
+`gem install solargraph solargraph-rails` (installing ri may take a bit)
+
+In Foreman directory run:
+`bundle install`
+`bundle exec yard gems && bundle exec yard doc --no-output`
+
+In Katello directory run:
+`yard gems && yard doc --no-output`
+
 If you have questions about or issues with deploying a development environment, feel free to ask
 for assistance in #theforeman-dev IRC channel on libera.chat or via the
 [community forum](https://community.theforeman.org/)

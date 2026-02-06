@@ -1,0 +1,17 @@
+include:
+  - "app/**/*.rb"
+  - "lib/**/*.rb"
+  - "engines/**/*.rb"
+exclude:
+  - test/**/*
+  - spec/**/*
+  - vendor/**/*
+  - node_modules/**/*
+require:
+  - rails
+  - actionpack
+  - activerecord
+reporters:
+  - rubocop
+plugins:
+  - solargraph-rails
