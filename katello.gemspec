@@ -68,4 +68,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency "jquery-ui-rails", "~> 6.0"
 
   gem.add_development_dependency "theforeman-rubocop", '~> 0.1.0'
+  gem.add_development_dependency "solargraph"
+  gem.add_development_dependency "solargraph-rails"
 end
