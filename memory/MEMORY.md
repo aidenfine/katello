@@ -1,0 +1,6 @@
+- [Project overview](project_overview.md) — Katello is a Foreman plugin for content/subscription management using Pulp and Candlepin
+- [Architecture essentials](project_architecture.md) — Rails engine plugin, Dynflow jobs, React+AngularJS frontend, PostgreSQL
+- [Development environment](project_dev_environment.md) — edit in katello dir, run commands from foreman dir, bundle exec required
+- [Testing practices](project_testing.md) — Minitest + Jest, ktest for individual files, VCR for external service tests
+- [Key conventions](project_conventions.md) — RABL for API views, never abbreviate CVE, permission registration in lib/katello/permissions/
+- [Errata migration threading](project_errata_migration_threading.md) — rake task uses 4-thread queue-based parallelism for batch processing
