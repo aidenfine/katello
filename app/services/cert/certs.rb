@@ -38,5 +38,28 @@ module Cert
       cert_store.add_file backend_ca_cert_file(:candlepin)
       organization.regenerate_ueber_cert unless cert_store.verify ueber_cert
     end
+
+    # cert_mapping takes in a File and will return a hash with the key being an OID and the value being the human readable name.
+    def self.cert_mapping(cert)
+      certificate = OpenSSL::X509::Certificate.new(cert)
+      tbs_certificate = OpenSSL::ASN1.decode(certificate.to_der).value.first
+
+      # fields array will have the structure of this.
+      # 0 version [0] MAY EXIST
+      # 1 serialNumber
+      # 2 signature
+      # 3 issuer
+      # 4 validity
+      # 5 subject
+      # 6 subjectPublicKeyInfo
+
+      fields = tbs_certificate.value
+      # version offset compensates the index number so if version does not exist we still resolve the correct oid index
+      version_offset = fields.first.tag_class == :CONTEXT_SPECIFIC ? 0 : -1
+      algorithm_oid = fields[6 + version_offset].value.first.value.first
+      algorithm_name = algorithm_oid.ln
+
+      { algorithm_oid.oid => algorithm_name }
+    end
   end
 end
