@@ -6,6 +6,25 @@ module Katello
     include ForemanTasks::Triggers
     LOCAL_FIND_TAXONOMY_ACTIONS = %w(repo_discover cancel_repo_discover download_debug_certificate
                                      cdn_configuration redhat_provider update releases).freeze
+
+    # Debug cert related algorithms map.
+    KEY_ALGORITHMS = {
+      'RSA' => '1.2.840.113549.1.1.1',
+      'ML-DSA-44' => '2.16.840.1.101.3.4.3.17',
+      'ML-DSA-65' => '2.16.840.1.101.3.4.3.18',
+      'ML-DSA-87' => '2.16.840.1.101.3.4.3.19',
+    }.freeze
+
+    SIGNATURE_ALGORITHMS = {
+      "SHA224WITHRSA" => "1.2.840.113549.1.1.14",
+      'SHA256WithRSA' => '1.2.840.113549.1.1.11',
+      "SHA384WITHRSA" => "1.2.840.113549.1.1.12",
+      "SHA512WITHRSA" => "1.2.840.113549.1.1.13",
+      'ML-DSA-44' => '2.16.840.1.101.3.4.3.17',
+      'ML-DSA-65' => '2.16.840.1.101.3.4.3.18',
+      'ML-DSA-87' => '2.16.840.1.101.3.4.3.19',
+    }.freeze
+
     before_action :local_find_taxonomy, :only => LOCAL_FIND_TAXONOMY_ACTIONS
 
     prepend_before_action :drop_taxonomy_id_from_params
@@ -127,9 +146,17 @@ module Katello
     end
 
     api :GET, "/organizations/:id/download_debug_certificate", N_("Download a debug certificate")
-    param :id, String, :desc => N_("Organization ID or title")
+    param :id, String, :desc => N_("Organization ID or title"), :required => true
+    param :key_algorithms, Array, :of => String, :desc => N_("Optional key algorithm OID strings")
+    param :signature_algorithms, Array, :of => String, :desc => N_("Optional signature algorithm OID strings")
     def download_debug_certificate
-      pem = @organization.debug_cert
+      key_algorithms = params[:key_algorithms] || []
+      signature_algorithms = params[:signature_algorithms] || []
+
+      pem = @organization.generate_debug_cert_with_algorithms(
+        key_algorithms: key_algorithms,
+        signature_algorithms: signature_algorithms
+      )
       data = "#{pem[:key]}\n\n#{pem[:cert]}"
       send_data data,
                 :filename => "#{@organization.name}-key-cert.pem",

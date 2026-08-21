@@ -100,8 +100,13 @@ module Katello
             ::Katello::Util::Data.array_with_indifferent_access JSON.parse(json_str)
           end
 
-          def generate_ueber_cert(key)
-            ueber_cert_json = self.post(join_path(path(key), "uebercert"), {}.to_json, self.default_headers).body
+          def generate_ueber_cert(key, key_algorithms: [], signature_algorithms: [])
+            body = {}
+            body[:keyAlgorithms] = key_algorithms if key_algorithms.any?
+            body[:signatureAlgorithms] = signature_algorithms if signature_algorithms.any?
+
+            ueber_cert_json = self.post(join_path(path(key), "uebercert"), body.to_json, self.default_headers).body
+            Rails.logger.info("[DEBUG]: Candlepin response: #{ueber_cert_json[0..200]}...")
             JSON.parse(ueber_cert_json).with_indifferent_access
           end
 
